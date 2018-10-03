@@ -4,8 +4,6 @@ const { graphiqlFastify, graphqlFastify } = require('fastify-graphql')
 const { maskErrors } = require('graphql-errors')
 const mongoose = require('mongoose')
 const mongooseSchemas = require('./models/rate')
-const _ = require('lodash')
-
 const { mergeSchemas } = require('graphql-tools')
 
 // TODO: https://github.com/eoscostarica/rate.eoscostarica.io/issues/6#issuecomment-422244272
@@ -17,7 +15,7 @@ const { mergeSchemas } = require('graphql-tools')
 
 // const syncProducers = async () => {
 //   try {
-    
+
 //   } catch (err) {
 //     console.log(err)
 //   }
