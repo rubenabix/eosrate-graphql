@@ -1,3 +1,5 @@
+const db = require('./../../db/volatile')
+
 const getRatings = () => {
   return [
     {
@@ -5,14 +7,11 @@ const getRatings = () => {
     }
   ]
 }
-const getBlockProducer = () => {
-  return [
-    {
-      id: '1'
-    }
-  ]
+const getBlockProducers = async () => {
+  const blockProducers = await db.getBlockProducers()
+  return blockProducers || []
 }
 module.exports = {
   getRatings,
-  getBlockProducer
+  getBlockProducers
 }

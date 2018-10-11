@@ -6,7 +6,7 @@ const resolveFunctions = {
       return controller.getRatings()
     },
     blockProducers (_, params = {}, context) {
-      return controller.getBlockProducer()
+      return controller.getBlockProducers()
     }
   },
   Mutation: {}
