@@ -55,6 +55,10 @@ type BlockProducerDetails {
 }
 
 type BlockProducer {
+  rank: Float
+  votePercent: Float
+  name: String
+  
   owner: String
   totalVotes: String
   producerKey: String

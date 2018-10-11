@@ -21,67 +21,38 @@ const syncProducers = async () => {
   const container = 'LAST'
   const blocks = []
   try {
-    const producerMetadata = camelcaseKeysDeep(await rp({
-      uri: 'https://monitor.eosio.cr/mainnet-producers.json',
+    const bpJSON = camelcaseKeysDeep(await rp({
+      uri: 'https://validate.eosnation.io/bps.json',
       json: true
     }))
     const {
-      rows: producers,
-      totalProducerVoteWeight
-    } = producerMetadata
-    for (let i = 0; i < producers.length; ++i) {
-      const producer = producers[i]
-      console.log('producer', i)
-      const {
-        owner,
-        totalVotes,
-        producerKey,
-        isActive,
-        url,
-        unpaidBlocks,
-        lastClaimTime,
-        location
-      } = producer
-      if (url) {
-        try {
-          let producerDetails = camelcaseKeysDeep(await rp({
-            uri: `${url}/bp.json`,
-            json: true
-          }))
-          if (producerDetails) {
-            const block = {
-              owner,
-              totalVotes,
-              producerKey,
-              isActive,
-              url,
-              unpaidBlocks,
-              lastClaimTime,
-              location,
-              details: producerDetails
-            }
-            // console.log('NEW BLOCK', i)
-            blocks.push(block)
-            await db.addBlockProducer({
-              blockProducer: block,
-              container,
-              id: producerKey
-            })
-          }
-          // console.log('producer', producer)
-          // console.log('producerDetails', util.inspect(producerDetails, {showHidden: false, depth: null}))
-        } catch (error) {
-          // console.log('error', error)
+      meta: globalMetadata,
+      producers
+    } = bpJSON
+    console.log('globalMetadata')
+    console.log(globalMetadata)
+    const totalProducers = producers.length
+    for (let i = 0; i < totalProducers; ++i) {
+      try {
+        const producer = producers[i]
+        console.log('producer', i)
+        const {
+          info,
+          messageSummary,
+          messages,
+          meta,
+          regproducer
+        } = producer
+
+        const block = {
+          rank: info.rank,
+          votePercent: info.votePercent,
+          name: info.name
         }
-      } else {
-        // console.log('producer', producer)
-      }
+
+      } catch (error) { }
     }
-    console.log('init updateBlockProducers', blocks)
-    console.log('complete updateBlockProducers')
-  } catch (err) {
-    console.log(err)
-  }
+  } catch (error) { }
 }
 
 // const timeInterval = humanToCron(process.env.SYNC_PRODUCERS_INTERVAL || 'once each 5 seconds')
