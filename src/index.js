@@ -12,11 +12,8 @@ const db = require('./db/volatile')
 const cuid = require('cuid')
 const moment = require('moment')
 
-// TODO: https://github.com/eoscostarica/rate.eoscostarica.io/issues/6#issuecomment-422244272
 const humanToCron = require('human-to-cron')
 const schedule = require('node-schedule')
-// const eosCamelApi = require('@eoscostarica/eosjs-camel-api')
-// const eosApi = eosCamelApi.getInstance()
 
 const syncProducers = async () => {
   const date = moment().format('YYYY-MM-DD-HH-mm')
@@ -36,8 +33,8 @@ const syncProducers = async () => {
   } catch (error) { }
 }
 
-// const timeInterval = humanToCron(process.env.SYNC_PRODUCERS_INTERVAL || 'once each 5 seconds')
-// schedule.scheduleJob(timeInterval, syncProducers)
+const timeInterval = humanToCron(process.env.SYNC_PRODUCERS_INTERVAL || 'once each 5 seconds')
+schedule.scheduleJob(timeInterval, syncProducers)
 
 maskErrors(customSchemas)
 

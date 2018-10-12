@@ -2,7 +2,7 @@ const Redis = require('ioredis')
 const EXPIRE_TIME_3H = 10800 // 24h in seconds
 let client
 
-// TODO: remove
+// TODO: remove add secret manager to save credentials
 const config = {
   REDIS_HOST: 'redis-17300.c61.us-east-1-3.ec2.cloud.redislabs.com',
   REDIS_PORT: '17300',
@@ -11,14 +11,6 @@ const config = {
 
 const getClient = async () => {
   if (!client) {
-    console.log('CREATE REDIS CLIENT', {
-      host: config.REDIS_HOST,
-      port: config.REDIS_PORT,
-      password: config.REDIS_PASSWORD,
-      showFriendlyErrorStack: true,
-      db: 0,
-      keyPrefix: 'RATE_'
-    })
     client = new Redis({
       host: config.REDIS_HOST,
       port: config.REDIS_PORT,
@@ -33,12 +25,12 @@ const getClient = async () => {
 
 const addBPJSON = async ({key, bpJSON}) => {
   const client = await getClient()
-  await client.setex([key, EXPIRE_TIME_3H, JSON.stringify(bpJSON)])
+  return client.setex([key, EXPIRE_TIME_3H, JSON.stringify(bpJSON)])
 }
 
 const updateLastReport = async ({key}) => {
-  const client = await getClient()
-  await client.set([`LAST_REPORT`, `${key}`])
+  const redisClientInstance = await getClient()
+  return redisClientInstance.set([`LAST_REPORT`, `${key}`])
 }
 
 const getBPJSON = async () => {
@@ -47,7 +39,7 @@ const getBPJSON = async () => {
   if (!lastKey) {
     return undefined
   }
-  let lastBPJSON = await client.get([lastKey])
+  const lastBPJSON = await client.get([lastKey])
   return lastBPJSON ? JSON.parse(lastBPJSON) : undefined
 }
 

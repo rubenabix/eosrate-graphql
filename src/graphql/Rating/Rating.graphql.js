@@ -96,7 +96,7 @@ type MetadataBPJSON {
 }
 
 type BPJSON {
-  meta: MetadataBPJSON,
+  meta: MetadataBPJSON
   producers: [Block]
 }
 
