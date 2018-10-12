@@ -5,8 +5,8 @@ const resolveFunctions = {
     ratings (_, params = {}, context) {
       return controller.getRatings()
     },
-    blockProducers (_, params = {}, context) {
-      return controller.getBlockProducers()
+    bpJSON (_, params = {}, context) {
+      return controller.getBPJSON()
     }
   },
   Mutation: {}

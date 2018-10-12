@@ -7,11 +7,11 @@ const getRatings = () => {
     }
   ]
 }
-const getBlockProducers = async () => {
-  const blockProducers = await db.getBlockProducers()
-  return blockProducers || []
+const getBPJSON = async () => {
+  const blockProducers = await db.getBPJSON()
+  return blockProducers || {}
 }
 module.exports = {
   getRatings,
-  getBlockProducers
+  getBPJSON
 }

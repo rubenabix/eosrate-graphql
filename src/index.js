@@ -10,6 +10,7 @@ const camelcaseKeysDeep = require('camelcase-keys-deep')
 const util = require('util')
 const db = require('./db/volatile')
 const cuid = require('cuid')
+const moment = require('moment')
 
 // TODO: https://github.com/eoscostarica/rate.eoscostarica.io/issues/6#issuecomment-422244272
 const humanToCron = require('human-to-cron')
@@ -18,40 +19,20 @@ const schedule = require('node-schedule')
 // const eosApi = eosCamelApi.getInstance()
 
 const syncProducers = async () => {
-  const container = 'LAST'
-  const blocks = []
+  const date = moment().format('YYYY-MM-DD-HH-mm')
+  const key = `${date}:${cuid()}`
   try {
     const bpJSON = camelcaseKeysDeep(await rp({
       uri: 'https://validate.eosnation.io/bps.json',
       json: true
     }))
-    const {
-      meta: globalMetadata,
-      producers
-    } = bpJSON
-    console.log('globalMetadata')
-    console.log(globalMetadata)
-    const totalProducers = producers.length
-    for (let i = 0; i < totalProducers; ++i) {
-      try {
-        const producer = producers[i]
-        console.log('producer', i)
-        const {
-          info,
-          messageSummary,
-          messages,
-          meta,
-          regproducer
-        } = producer
-
-        const block = {
-          rank: info.rank,
-          votePercent: info.votePercent,
-          name: info.name
-        }
-
-      } catch (error) { }
-    }
+    console.log('addBPJSON')
+    await db.addBPJSON({
+      bpJSON,
+      key
+    })
+    console.log('updateLastReport')
+    await db.updateLastReport({key})
   } catch (error) { }
 }
 

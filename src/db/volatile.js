@@ -1,5 +1,5 @@
 const Redis = require('ioredis')
-
+const EXPIRE_TIME_3H = 10800 // 24h in seconds
 let client
 
 // TODO: remove
@@ -31,28 +31,28 @@ const getClient = async () => {
   return client
 }
 
-const addBlockProducer = async ({blockProducer, container, id}) => {
+const addBPJSON = async ({key, bpJSON}) => {
   const client = await getClient()
-  await client.hset([`BLOCKS:${container}`, id, JSON.stringify(blockProducer)])
+  await client.setex([key, EXPIRE_TIME_3H, JSON.stringify(bpJSON)])
 }
 
-const getBlockProducers = async () => {
+const updateLastReport = async ({key}) => {
   const client = await getClient()
-  let blockProducers = await client.hgetall(['BLOCKS:LAST'])
-  console.log('blockProducers', blockProducers)
-  if (!blockProducers) {
-    return []
+  await client.set([`LAST_REPORT`, `${key}`])
+}
+
+const getBPJSON = async () => {
+  const client = await getClient()
+  const lastKey = await client.get([`LAST_REPORT`])
+  if (!lastKey) {
+    return undefined
   }
-  const blocks = []
-  console.log('')
-  for (let key in blockProducers) {
-    blocks.push(JSON.parse(blockProducers[key]))
-  }
-  console.log('blocks', blocks)
-  return blocks
+  let lastBPJSON = await client.get([lastKey])
+  return lastBPJSON ? JSON.parse(lastBPJSON) : undefined
 }
 
 module.exports = {
-  getBlockProducers,
-  addBlockProducer
+  getBPJSON,
+  addBPJSON,
+  updateLastReport
 }
